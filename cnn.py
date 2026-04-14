@@ -62,8 +62,33 @@ def build_cnn_model(n_blocks, filters_base, kernel_size, dropout):
     model.add(layers.Dense(10, activation="softmax"))
     return model
 
+def build_cifar10_model(n_blocks, filters_base, kernel_size, dropout):
+    model = keras.Sequential()
+    model.add(layers.Input(shape=(32, 32, 3)))
+
+    for i in range(n_blocks):
+        filters = filters_base * (2 ** i)
+
+        model.add(layers.Conv2D(filters, kernel_size=kernel_size, padding="same"))
+        model.add(layers.BatchNormalization())   # NEW (važan za CIFAR)
+        model.add(layers.ReLU())
+
+        model.add(layers.Conv2D(filters, kernel_size=kernel_size, padding="same"))
+        model.add(layers.BatchNormalization())
+        model.add(layers.ReLU())
+
+        model.add(layers.MaxPooling2D(pool_size=2))
+        model.add(layers.Dropout(dropout * 0.5))  # manji dropout u conv dijelu
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(256))
+    model.add(layers.ReLU())
+    model.add(layers.Dropout(dropout))
+    model.add(layers.Dense(10, activation="softmax"))
+    return model
+
 class MsperBatchLogger(keras.callbacks.Callback):
-    def __init__(self, warmup_batches=5, max_batches=50):
+    def __init__(self, warmup_batches=10, max_batches=50):
         super().__init__()
         self.warmup_batches = warmup_batches # prvih pet batcheva ne mjertimo jer bude sporije, dok se učitai ne zagrije GPU, a nakon toga ćemo mjeriti vrijeme po batchu, ali ćemo ograničiti na 50 batcheva da ne bi bilo previše informacija
         self.max_batches = max_batches # nakon 50 batcheva ćemo prestati mjeriti, jer nam treba samo okvirna informacija o tome koliko traje jedan batch, a ne želimo previše informacija koje bi nam zatrpale output
@@ -97,6 +122,23 @@ def load_mnist():
     x_train = (x_train.astype("float32") / 255.0)[..., None]  # (N, 28, 28, 1)
     x_test  = (x_test.astype("float32") / 255.0)[..., None]
 
+    # train/val split
+    # Za val uzimamo zadnjih 10.000 slika iz trening skupa, a ostatak ostavljam za trening, 
+    # to je standardna praksa koja se pokazala dobra za ovaj zadatak, i u literaturi za MINST najčešće se koristi val split od 10.000 slika, što nam daje dovoljno podataka za validaciju, a da ne oduzmemo previše podataka od trening skupa
+    # ovo nam je potrebno da ne bi koristeći nsga 2 optimizaciju na test skupu, što bi nam dalo nerealne performanse, jer bi model mogao naučiti da se prilagodi test skupu, umjesto da generalizuje na nove podatke, a val skup nam daje realniju informaciju o tome koliko dobro model generalizuje na nove podatke, jer ga nismo koristili tokom treninga
+    x_val, y_val = x_train[-10000:], y_train[-10000:]
+    x_train2, y_train2 = x_train[:-10000], y_train[:-10000]
+
+    return (x_train2, y_train2), (x_val, y_val), (x_test, y_test)
+
+def load_cifar_10():
+    (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
+
+    x_train = (x_train.astype("float32") / 255.0)[..., None]  # (N, 28, 28, 1)
+    x_test  = (x_test.astype("float32") / 255.0)[..., None]
+
+    y_train = y_train.squeeze()  # (N,1) -> (N,)
+    y_test  = y_test.squeeze()
     # train/val split
     # Za val uzimamo zadnjih 10.000 slika iz trening skupa, a ostatak ostavljam za trening, 
     # to je standardna praksa koja se pokazala dobra za ovaj zadatak, i u literaturi za MINST najčešće se koristi val split od 10.000 slika, što nam daje dovoljno podataka za validaciju, a da ne oduzmemo previše podataka od trening skupa

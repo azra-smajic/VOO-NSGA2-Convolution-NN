@@ -1,41 +1,56 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 from genetic_algorithm import nsga2
 import tensorflow as tf
+from cnn_models import pick_representatives,final_eval_on_test
+
 
 
 
 def main():
-    print("TF version:", tf.__version__)
-    gpus = tf.config.list_physical_devices('GPU')
-    print("GPUs:", gpus)
-    # N = 12      
-    # G = 4     
-    # pc = 0.9     
-    # pm = 0.2     
-    # seed = 1
-    # P, front = nsga2(N=N, G=G, pc=pc, pm=pm, seed=seed)
+    # print("TF version:", tf.__version__)
+    # gpus = tf.config.list_physical_devices('GPU')
+    # print("GPUs:", gpus)
+    N = 20      
+    G = 6     
+    pc = 0.9     
+    pm = 0.2     
+    seed = 1
+    P, front = nsga2(N=N, G=G, pc=pc, pm=pm, seed=seed)
 
-    # all_err = [ind.f[0] for ind in P]            # 1 - val_acc
-    # all_acc = [1.0 - e for e in all_err]         # val_acc
-    # all_ms  = [ind.f[1] for ind in P]            # ms/batch
+    all_err = [ind.f[0] for ind in P]            # 1 - val_acc
+    all_acc = [1.0 - e for e in all_err]         # val_acc
+    all_ms  = [ind.f[1] for ind in P]            # ms/batch
 
-    # # Pareto front
-    # front_err = [ind.f[0] for ind in front]
-    # front_acc = [1.0 - e for e in front_err]
-    # front_ms  = [ind.f[1] for ind in front]
+    # Pareto front
+    front_err = [ind.f[0] for ind in front]
+    front_acc = [1.0 - e for e in front_err]
+    front_ms  = [ind.f[1] for ind in front]
 
-    # # Graf: vrijeme (ms/batch) vs tačnost
-    # plt.figure()
-    # plt.scatter(all_ms, all_acc, alpha=0.35, label="Sva rješenja (P)")
-    # plt.scatter(front_ms, front_acc, marker="x", label="Pareto front (F1)")
-    # plt.xlabel("ms/batch (manje je bolje)")
-    # plt.ylabel("Val accuracy (više je bolje)")
-    # plt.title("NSGA-II: Accuracy vs Time")
-    # plt.grid(True)
-    # plt.legend()
+    # Graf: vrijeme (ms/batch) vs tačnost
+    plt.figure()
+    plt.scatter(all_ms, all_acc, alpha=0.35, label="Sva rješenja (P)")
+    plt.scatter(front_ms, front_acc, marker="x", label="Pareto front (F1)")
+    plt.xlabel("ms/batch (manje je bolje)")
+    plt.ylabel("Val accuracy (više je bolje)")
+    plt.title("NSGA-II: Accuracy vs Time")
+    plt.grid(True)
+    plt.legend()
+    plt.savefig("pareto.png", dpi=200, bbox_inches="tight")
+    print("Snimljen graf: pareto.png")
 
-    # plt.show()
+    reps = pick_representatives(front)
+
+    log_path = "final_eval.log"
+
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write("\n=== FINAL EVAL (duže treniranje + TEST) ===\n")
+        for ind in reps:
+            cfg, test_acc, msb = final_eval_on_test(ind, epochs_final=15)
+            f.write(f" test_acc={test_acc:.4f}, ms/batch~{msb:.2f}\n")
+            f.write(f"cfg: {cfg}\n")
+    
+
     # all_time = [ind.f[0] for ind in P] # za svaku jedinku P uzmi prvi cilj, tj vrijeme
     # all_range = [-ind.f[1] for ind in P] # za svaku jedinku isto uzeti drugi cilj ali u minusu zato što smo koristili minimizaciju umjesto maksimizacije
     # #all_price = [ind.f[2] for ind in P] # za svaku jedinku uzmi treći cilj, tj cijenu
