@@ -1,5 +1,5 @@
-from constants import ALPHA_M, ALPHA_P, ALPHA_P2, ALPHA_PM, ALPHA_T2, ALPHA_T_CONS, BETA_T1, BETA_T2, BETA_T_ACCEL, C0, ETA, K_B, MO, P_REF, T_REF
-from models import Car
+from .constants import ALPHA_M, ALPHA_P, ALPHA_P2, ALPHA_PM, ALPHA_T2, ALPHA_T_CONS, BETA_T1, BETA_T2, BETA_T_ACCEL, C0, ETA, K_B, MO, P_REF, T_REF
+from .models import Car
 
 # Ovdje sam napravila intuitivno prvu verziju u kojoj sam rekla, okej ako povećamo snagu motora, ubrzanje će se smanjiti,
 # ali neću se baviti time koliko će se smanjiti, nego ću reći da je ubrzanje obrnuto proporcionalno snazi motora, da distanca ovisi direktno

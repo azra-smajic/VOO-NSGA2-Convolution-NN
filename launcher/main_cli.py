@@ -1,8 +1,15 @@
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
 # from mpl_toolkits.mplot3d import Axes3D
-from genetic_algorithm import nsga2
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.genetic_algorithm import nsga2
 import tensorflow as tf
-from cnn_models import pick_representatives,final_eval_on_test
+from cnn.cnn_models import pick_representatives, final_eval_on_test
 
 
 
@@ -36,12 +43,14 @@ def main():
     plt.title("NSGA-II: Accuracy vs Time")
     plt.grid(True)
     plt.legend()
-    plt.savefig("pareto.png", dpi=200, bbox_inches="tight")
-    print("Snimljen graf: pareto.png")
+    output_path = Path("outputs") / "pareto.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=200, bbox_inches="tight")
+    print(f"Snimljen graf: {output_path}")
 
     reps = pick_representatives(front)
 
-    log_path = "final_eval.log"
+    log_path = Path("outputs") / "final_eval.log"
 
     with open(log_path, "a", encoding="utf-8") as f:
         f.write("\n=== FINAL EVAL (duže treniranje + TEST) ===\n")

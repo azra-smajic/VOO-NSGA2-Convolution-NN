@@ -1,5 +1,5 @@
 import random
-from constants import BOUNDS
+from .constants import BOUNDS
 
 # Ova funkcija će nam pomoći da ograničimo vrijednosti unutar određenih granica, npr mutacija je promijenila snagu na 300 kWh a ne možemo imati više of 250
 def clamp(value, min_val, max_val):

@@ -1,0 +1,24 @@
+BOUNDS = {
+    "t": (17.0, 22.0),
+    "P": (80.0, 250.0),
+    "B": (40.0, 120.0),
+}
+
+T_REF = 19.0
+BETA_T_ACCEL = 0.04
+BETA_T1 = 0.05
+BETA_T2 = 0.01
+ALPHA_T_CONS = 0.06
+ALPHA_T2 = 0.02
+P_REF = 150.0
+MO = 1300.0
+K_B = 6.0
+C0 = 0.12
+ALPHA_M = 0.6
+ALPHA_T = 0.003
+ALPHA_P = 0.35
+ALPHA_PM = 0.10
+ALPHA_P2 = 0.05
+A_ACCEL = 250.0
+K_T_ACCEL = 0.02
+ETA = 0.85

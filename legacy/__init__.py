@@ -1,0 +1,1 @@
+"""Stariji dijelovi projekta."""
