@@ -1,17 +1,15 @@
 # NSGA-II CNN Optimizer
 
-Ovaj projekat prikazuje primjenu `NSGA-II` algoritma na optimizaciju konvolucijskih neuronskih mreza. Aplikacija trazi Pareto-optimalne kompromise izmedju dvije odabrane mjere, na primjer:
+Ovaj projekat prikazuje primjenu `NSGA-II` algoritma na optimizaciju konvolucijskih neuronskih mreza. Aplikacija trazi Pareto-optimalne kompromise izmedju dva fiksna cilja:
 
 - `1 - validation accuracy`
-- `validation loss`
 - `milliseconds per batch`
-- `number of parameters`
 
 Kroz Streamlit interfejs moguce je:
 
 - odabrati dataset (`MNIST` ili `CIFAR-10`)
 - podesiti `train / validation / test` split
-- odabrati mjere koje NSGA-II optimizira
+- koristiti originalne ciljeve `1 - validation accuracy` i `milliseconds per batch`
 - pokrenuti optimizaciju i pratiti tok izvrsavanja
 - pauzirati ili zaustaviti izvrsavanje
 - pregledati Pareto front i izdvojena reprezentativna rjesenja
@@ -25,7 +23,7 @@ Kroz Streamlit interfejs moguce je:
 |   |-- cnn.py
 |   |-- cnn_models.py
 |-- doc/
-|   |-- SEMINAR_WORKFLOW.md
+|   |-- Implementacija NSGA II algoritma u problemu tuniranja hiperparametara CNN.docx
 |-- launcher/
 |   |-- main_cli.py
 |   |-- streamlit_app.py
@@ -53,6 +51,7 @@ Kroz Streamlit interfejs moguce je:
   - `main_cli.py` za jednostavno pokretanje iz terminala
 - `legacy/car_example/` cuva stariji primjer optimizacije elektricnog automobila.
 - `doc/` je predvidjen za seminarski tekst, biljeske i pomocnu dokumentaciju.
+- U folderu `doc/` se nalazi i seminarski rad: `Implementacija NSGA II algoritma u problemu tuniranja hiperparametara CNN.docx`.
 - `outputs/` cuva generisane grafove i logove.
 
 ## Instalacija
@@ -94,9 +93,9 @@ python -m launcher.main_cli
 
 1. U sidebar-u odaberi dataset.
 2. Podesi `train`, `validation` i `test` split.
-3. Odaberi mjere koje NSGA-II minimizira.
+3. Ciljevi optimizacije su fiksni: `1 - validation accuracy` i `milliseconds per batch`.
 4. Podesi `N`, `G`, `pc`, `pm` i `seed`.
-5. Odaberi tip uredjaja za izvrsavanje
+5. Odaberi tip uredjaja za izvrsavanje.
 6. Klikni `Pokreni optimizaciju`.
 7. Prati tok izvrsavanja kroz:
    - progress bar
@@ -109,4 +108,4 @@ python -m launcher.main_cli
 
 - Ako je Pareto front vrlo mali, probaj vece vrijednosti `N` i `G`.
 - Ako vrijeme izvrsavanja postane veliko, smanji broj epoha u pretrazi.
-- Oblik Pareto fronta zavisi od odabranih ciljeva, dataseta i split-a.
+- Oblik Pareto fronta zavisi od dataseta, split-a i hardverskog okruzenja, jer je jedan cilj vezan za vrijeme treniranja.

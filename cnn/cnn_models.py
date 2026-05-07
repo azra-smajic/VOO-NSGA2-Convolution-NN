@@ -47,19 +47,11 @@ OBJECTIVE_1_OPTIONS = {
         "label": "1 - validation accuracy",
         "direction": "min",
     },
-    "val_loss": {
-        "label": "Validation loss",
-        "direction": "min",
-    },
 }
 
 OBJECTIVE_2_OPTIONS = {
     "ms_per_batch": {
         "label": "Milliseconds per batch",
-        "direction": "min",
-    },
-    "param_count": {
-        "label": "Number of parameters",
         "direction": "min",
     },
 }
@@ -349,24 +341,9 @@ def _get_current_splits():
 
 
 def _objective_values(cfg, model, history, ms_cb):
-    objective_1 = EXPERIMENT_CONFIG["objective_1"]
-    objective_2 = EXPERIMENT_CONFIG["objective_2"]
-
-    if objective_1 == "1-val_accuracy":
-        val_acc = float(history.history["val_accuracy"][-1])
-        obj1 = 1.0 - val_acc
-    elif objective_1 == "val_loss":
-        val_acc = float(history.history["val_accuracy"][-1])
-        obj1 = float(history.history["val_loss"][-1])
-    else:
-        raise ValueError(f"Nepodrzan objective_1: {objective_1}")
-
-    if objective_2 == "ms_per_batch":
-        obj2 = float(ms_cb.ms_per_batch) if ms_cb.ms_per_batch is not None else float("inf")
-    elif objective_2 == "param_count":
-        obj2 = float(model.count_params())
-    else:
-        raise ValueError(f"Nepodrzan objective_2: {objective_2}")
+    val_acc = float(history.history["val_accuracy"][-1])
+    obj1 = 1.0 - val_acc
+    obj2 = float(ms_cb.ms_per_batch) if ms_cb.ms_per_batch is not None else float("inf")
 
     return obj1, obj2, val_acc
 

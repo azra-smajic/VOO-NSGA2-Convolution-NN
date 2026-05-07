@@ -330,7 +330,7 @@ def get_manager():
 
 st.title("NSGA-II interfejs za optimizaciju CNN-a")
 st.write(
-    "Interfejs sada omogucava odabir dataseta, split-a, mjera optimizacije, "
+    "Interfejs za odabir dataseta, split-a, mjera optimizacije, "
     "pracenje toka izvrsavanja i soft pause/stop kontrolu."
 )
 
@@ -375,20 +375,9 @@ with st.sidebar:
 
     st.divider()
     st.header("Mjere")
-    objective_1 = st.selectbox(
-        "Objective 1",
-        options=list(options["objective_1"].keys()),
-        format_func=lambda key: options["objective_1"][key],
-        index=list(options["objective_1"].keys()).index(current_config["objective_1"]),
-        disabled=state["running"],
-    )
-    objective_2 = st.selectbox(
-        "Objective 2",
-        options=list(options["objective_2"].keys()),
-        format_func=lambda key: options["objective_2"][key],
-        index=list(options["objective_2"].keys()).index(current_config["objective_2"]),
-        disabled=state["running"],
-    )
+    objective_1 = "1-val_accuracy"
+    objective_2 = "ms_per_batch"
+    st.info("U ovom projektu ciljevi su fiksni: `1 - validation accuracy` i `milliseconds per batch`.")
     search_epochs = st.slider("Broj epoha u pretrazi", min_value=1, max_value=10, value=int(current_config["search_epochs"]), step=1, disabled=state["running"])
     final_epochs = st.slider("Broj epoha za zavrsno testiranje", min_value=3, max_value=20, value=int(current_config["final_epochs"]), step=1, disabled=state["running"])
 
